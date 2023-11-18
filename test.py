@@ -24,9 +24,18 @@ driver.get("https://chat.openai.com/")
 # Wait for search results to load
 driver.implicitly_wait(2)
 
-time.sleep(5)
+time.sleep(2)
 
-conversation_number = 3 # All odd ones are AI, all even ones are human
+text_area = driver.find_element(by="xpath", value="//textarea[@id='prompt-textarea']")
+text_area.click()
+
+init_input = '''We are playing a trivia, so for every question I ask and you answer correctly, you get one point. Rules: for every question just give me answer, no extra words/ information'''
+
+text_area.send_keys(init_input)
+text_area.submit()
+time.sleep(2)
+
+conversation_number = 5 # All odd ones are AI, all even ones are human
 while True:
     text_area = driver.find_element(by="xpath", value="//textarea[@id='prompt-textarea']")
     text_area.click()
@@ -38,15 +47,19 @@ while True:
     text_area.send_keys(userinput)
     text_area.submit()
     
-    
+    while True:
+        try:
+            send_button = driver.find_element(by="xpath", value="//button[@data-testid='send-button']")
+            break
+        except:
+            pass
     # send_button = driver.find_element(by="xpath", value="//button[@data-testid='send-button']")
     
-    
-    driver.implicitly_wait(10)
-    time.sleep(10)
+    # driver.implicitly_wait(10)
+    time.sleep(1)
     answer = driver.find_element(by="xpath", value=f"//div[@data-testid='conversation-turn-{conversation_number}']")
     
     # print(answer.text[answer.text.find("\n"):])
     print(answer.text[8:])
-    time.sleep(5)
+    time.sleep(1)
     conversation_number += 2
