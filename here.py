@@ -12,7 +12,9 @@ chrome_executable_path = 'F:/chrome-win64/chrome.exe'
 # Set Chrome options
 options = webdriver.ChromeOptions()
 options.binary_location = chrome_executable_path
-
+#options.add_argument("--headless")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
 options.add_argument(f'user-data-dir={user_data_dir}')
 options.add_argument(f'profile-directory={profile_directory}')
 
@@ -39,16 +41,20 @@ conversation_number = 5
 
 # Clear the clipboard when the program starts
 pyperclip.copy("")
-
+response_text = ""
 while True:
-    # Check for new clipboard content
     clipboard_content = pyperclip.paste()
+    while response_text == clipboard_content:
+        clipboard_content = pyperclip.paste()
+        time.sleep(0.5)
+    # Check for new clipboard content
     if clipboard_content.strip() and clipboard_content.strip() != "#quit":
-        userinput = clipboard_content.strip()
-
+        userinput = clipboard_content
+        userinput = userinput.replace("\n", " ")
         text_area = driver.find_element(by="xpath", value="//textarea[@id='prompt-textarea']")
         text_area.click()
         text_area.send_keys(userinput)
+        time.sleep(0.5)
         text_area.submit()
 
         while True:
@@ -68,7 +74,6 @@ while True:
         conversation_number += 2
 
         # Clear the clipboard after processing the command
-        pyperclip.copy("")
 
     elif clipboard_content.strip() == "#quit":
         break
